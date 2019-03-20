@@ -164,3 +164,35 @@ service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.subm
 service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,chorus,fidelity,fidelity_tsds,fidelity_unifi</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
 
 
+
+"<property>
+<name>security.job.submission.protocol.acl</name>
+<value>yarn, mapreduce, chorus</value>
+<description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description>
+</property>
+<property>
+<name>security.datanode.protocol.acl</name>
+<value>*</value>
+</property>
+<property>
+<name>security.client.protocol.acl</name>
+<value>*</value>
+</property>"
+"<property>
+<name>security.job.submission.protocol.acl</name>
+<value>yarn, mapreduce, eisdev</value>
+<description>yarn, mapreduce, and eisdev are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description>
+</property>
+"
+"<property>
+<name>security.job.submission.protocol.acl</name>
+<value>yarn, mapreduce, eisdev</value>
+<description>yarn, mapreduce, and eisdev are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description>
+</property>"
+<property>  <name>security.job.submission.protocol.acl</name>  <value>yarn, mapreduce, chorus</value>  <description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property>  <name>security.datanode.protocol.acl</name>  <value>*</value> </property> <property>  <name>security.client.protocol.acl</name>  <value>*</value> </property>
+<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, c360alpd</value> <description>yarn, mapreduce, and c360alpd are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
+<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, mapred, alpine</value> </property>  <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
+<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbdwh26</value><description>yarn, mapreduce, and pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbwaanlp26, pbbdwh26</value><description>yarn, mapreduce, pbbwaanlp26, pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,alpine</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,chorus,fidelity,fidelity_tsds,fidelity_unifi</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
