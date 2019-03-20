@@ -64,6 +64,103 @@ Step 5b: Kudu on RHEL/CentOS 6
 In CM, add the following parameter to the “Kudu Service Advanced Configuration Snippet (Safety Valve) for gflagfile”
 -rpc_tls_ciphers=DEFAULT:!aNULL:!eNULL:!LOW:!EXPORT:!SSLv2:!SSLv3:!TLSv1
 
-
+service	HDFS	hadoop_policy_config_safety_valve	"<property>
+ <name>security.client.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.client.datanode.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.datanode.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.inter.datanode.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.namenode.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.admin.operations.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.refresh.user.mappings.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.refresh.policy.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.ha.service.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.zkfc.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.qjournal.service.protocol.acl</name>
+ <value>*</value>
+</property>
+<property>
+ <name>security.mrhs.client.protocol.acl</name>
+ <value>*</value>
+</property>
+"
+service	HDFS	hadoop_policy_config_safety_valve	"<property>
+<name>security.job.submission.protocol.acl</name>
+<value>yarn, mapreduce, chorus</value>
+<description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description>
+</property>
+<property>
+<name>security.datanode.protocol.acl</name>
+<value>*</value>
+</property>
+<property>
+<name>security.client.protocol.acl</name>
+<value>*</value>
+</property>"
+service	HDFS	hadoop_policy_config_safety_valve	<property>  <name>security.job.submission.protocol.acl</name>  <value>yarn, mapreduce, chorus</value>  <description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property>  <name>security.datanode.protocol.acl</name>  <value>*</value> </property> <property>  <name>security.client.protocol.acl</name>  <value>*</value> </property>
+service	HDFS	hadoop_policy_config_safety_valve	<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, c360alpd</value> <description>yarn, mapreduce, and c360alpd are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
+service	HDFS	hadoop_policy_config_safety_valve	<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, mapred, alpine</value> </property>  <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
+service	HDFS	hadoop_policy_config_safety_valve	"<property><name>security.client.protocol.acl</name><value>*</value></property>
+<property><name>security.client.datanode.protocol.acl</name><value>*</value></property>
+<property><name>security.datanode.protocol.acl</name><value>*</value></property>
+<property><name>security.inter.datanode.protocol.acl</name><value>*</value></property>
+<property><name>security.namenode.protocol.acl</name><value>*</value></property>
+<property><name>security.admin.operations.protocol.acl</name><value>*</value></property>
+<property><name>security.refresh.user.mappings.protocol.acl</name><value>*</value></property>
+<property><name>security.refresh.policy.protocol.acl</name><value>*</value></property>
+<property><name>security.ha.service.protocol.acl</name><value>*</value></property>
+<property><name>security.zkfc.protocol.acl</name><value>*</value></property>
+<property><name>security.qjournal.service.protocol.acl</name><value>*</value></property>
+<property><name>security.mrhs.client.protocol.acl</name><value>*</value></property> "
+service	HDFS	hadoop_policy_config_safety_valve	"<property><name>security.client.protocol.acl</name><value>*</value></property>
+<property><name>security.client.datanode.protocol.acl</name><value>*</value></property>
+<property><name>security.datanode.protocol.acl</name><value>*</value></property>
+<property><name>security.inter.datanode.protocol.acl</name><value>*</value></property>
+<property><name>security.namenode.protocol.acl</name><value>*</value></property>
+<property><name>security.admin.operations.protocol.acl</name><value>*</value></property>
+<property><name>security.refresh.user.mappings.protocol.acl</name><value>*</value></property>
+<property><name>security.refresh.policy.protocol.acl</name><value>*</value></property>
+<property><name>security.ha.service.protocol.acl</name><value>*</value></property>
+<property><name>security.zkfc.protocol.acl</name><value>*</value></property>
+<property><name>security.qjournal.service.protocol.acl</name><value>*</value></property>
+<property><name>security.mrhs.client.protocol.acl</name><value>*</value></property>
+"
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>*</value></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>*</value></property> <property><name>security.client.datanode.protocol.acl</name><value>*</value></property> <property><name>security.datanode.protocol.acl</name><value>*</value></property> <property><name>security.inter.datanode.protocol.acl</name><value>*</value></property> <property><name>security.namenode.protocol.acl</name><value>*</value></property> <property><name>security.admin.operations.protocol.acl</name><value>*</value></property> <property><name>security.refresh.user.mappings.protocol.acl</name><value>*</value></property> <property><name>security.refresh.policy.protocol.acl</name><value>*</value></property> <property><name>security.ha.service.protocol.acl</name><value>*</value></property> <property><name>security.zkfc.protocol.acl</name><value>*</value></property> <property><name>security.qjournal.service.protocol.acl</name><value>*</value></property> <property><name>security.mrhs.client.protocol.acl</name><value>*</value></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>hdfs_audit_logs,hbase,hive,hue,oozie,pie-utilization_hadoop,spark hadoop,hdp-datastudio,hdp-hdfs-hubble,hdp-pie-spark-access,hdp-pie-telemetry,hdp-sre</value></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>hdfs_audit_logs,hbase,hive,hue,oozie,pie-utilization_hadoop,spark hadoop,hdp-datastudio,hdp-hdfs-hubble,hdp-pie-spark-access,hdp-pie-telemetry,hdp-sre</value><description>https://hadoop.apache.org/docs/r2.6.0/hadoop-project-dist/hadoop-common/ServiceLevelAuth.html</description></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbdwh26</value><description>yarn, mapreduce, and pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbwaanlp26, pbbdwh26</value><description>yarn, mapreduce, pbbwaanlp26, pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,alpine</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,chorus,fidelity,fidelity_tsds,fidelity_unifi</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
 
 
