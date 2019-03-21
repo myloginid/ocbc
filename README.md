@@ -1,198 +1,230 @@
-# ocbc
+# PS Doc Generator
 
-hdfs_ssl_server_safety_valve/yarn_ssl_server_safety_valve
+## 1 &nbsp;&nbsp; Introduction
 
-<property><name>ssl.server.exclude.cipher.list</name><value>TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_KRB5_EXPORT_WITH_RC2_CBC_40_SHA,TLS_DH_DSS_WITH_AES_128_CBC_SHA,TLS_KRB5_EXPORT_WITH_RC4_40_SHA</value><final>true</final><description>Inserted by Durga on 8/14/18 for TLS Hardening project</description></property>
+### 1.1 &nbsp;&nbsp; Why generate reports?
 
+Writing engagement reports is tedious and error-prone - a lot of time is spent manually extracting information from
+Cloudera Manager and the base systems, and then painstakingly formatting them in the giant MS Word document template.
 
-hue_server_hue_safety_valve 
+Despite all the time and effort, the resulting document often has omissions and mistakes. It is also inconsistent in
+terms of formatting and content, as there is only one template for ALL engagement types and different SA/SCs choose to
+include different sections. Having the template in a MS Word document itself is problematic - it is hard to maintain
+consistent formatting and track/merge changes.  
 
-[desktop] ssl_cipher_list=ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:!DSS  
+All this hard work and time wasted can be better spent on higher value work. So let's automate all the grunt work, which
+will give us 80-90% of the final engagement report and we just have to fill in the rest.
 
+### 1.2 &nbsp;&nbsp; How does it work?
 
-secure=true Enable tagging of secure flag to the users' session ID cookie. Prevents man-in-middle attack.
-http-only=true Enable tagging of http-only flag to the users' session ID cookie. Prevents cross-site scripting vulnerability.
-expire_at_browser_close=true Terminate Hue logon session after user closed the browser.
-ttl=86400 Expire the users' session ID cookie after 1 day (24 hours).
+We first run a simple Shell script (`cm-info.sh`) to collect the required information from Cloudera Manager ("CM") via
+the CM API. This is deliberately kept as simple as possible (e.g. Bash instead of Python) with minimal dependencies so
+that we can easily run it in customer environments.
 
-[desktop] 
-app_blacklist=spark,rdbms,sqoop,zookeeper,hbase 
-use_x_forwarded_host=True 
-ssl_validate=False  
-ssl_cipher_list=ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS:!DH:!ADH:!DES:!3DES 
-[[auth]] 
-idle_session_timeout=600 
-ignore_username_case=True 
-force_username_lowercase=True
-login_failure_limit=3 
-login_lock_out_at_failure=true 
-login_cooloff_time=1800
-login_lock_out_by_combination_browser_user_agent_and_ip=true
-login_lock_out_by_combination_user_and_ip=true 
-[[ldap]] 
-debug=False 
-debug_level=255 
-trace_level=9 
-ignore_username_case=true 
-force_username_lowercase=true 
-[[session]] 
-secure=True 
-ttl=14400 
-http_only=True  
-expire_at_browser_close=True 
-[[ssl]] 
-validate=False 
+Then we take the (JSON) output and run it against our internal document generator which generate a
+[LaTeX](https://www.latex-project.org/get/) document, that in turn is compiled into PDF - with all the cluster and
+system information filled out and in proper Cloudera document template. It can then be further edited to include other
+non-standard/generated content and customised.
 
-Impala Daemon Command Line Argument Advanced Configuration Snippet (Safety Valve):
---ssl_minimum_version=tlsv1.2
---ssl_cipher_list=ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS:!3DES:!DES:!SHA
+Note that this document generator tool is STRICTLY INTERNAL - do not share with customers or even delivery partners. In
+fact, avoid letting externals know we have such a tool as it may devalue our report/work/pricing.
 
+### 1.3 &nbsp;&nbsp; What is LaTeX?
 
-Kudu
+LaTeX is a popular free open source typesetting language and program that we use to generate the PDF reports from the
+`.tex` markup files. Content is decoupled from the formatting (similar to HTML and CSS), allowing us to produce
+consistent and professional reports with minimal effort.
 
-There are two ports to configure for Kudu, the rpc protocol port and the webserver protocol port. In CDH 5.13.1 it’s possible to restrict the TLS protocol to TLS 1.2 for the rpc protocol port. This is the port where that all the data travels through. Unfortunately it’s not possible to similarly enforce TLS 1.2 on the web server port in CDH 5.13.1. The traffic that goes over the web server port is of a generally non-sensitive nature - like status.
+LaTeX itself has a steep learning curve, but all the hard work has been done here already, so one can just learn the
+bare minimum needed, which is easy. One key advantage of such a markup language is that it is simple plaintext, not
+binary (or complex XML like .docx/.odf). This makes it easy and natural to track changes to the templates in Git.
 
-Like Impala, there are two different solutions depending on the OS version. For RHEL/CentOS 7, do this:
+## 2 &nbsp;&nbsp; Running it
 
-Step 5a: Kudu on RHEL/CentOS 7
-In CM, add the following parameter to the “Kudu Service Advanced Configuration Snippet (Safety Valve) for gflagfile”
--rpc_tls_min_protocol=TLSv1.2
+### 2.1 &nbsp;&nbsp; Initial first-time setup
 
-On RHEL/CentOS 6, add the following instead:
+1. Install [MacTeX](http://www.tug.org/mactex/).
+2. Install Python dependencies:
 
-Step 5b: Kudu on RHEL/CentOS 6
-In CM, add the following parameter to the “Kudu Service Advanced Configuration Snippet (Safety Valve) for gflagfile”
--rpc_tls_ciphers=DEFAULT:!aNULL:!eNULL:!LOW:!EXPORT:!SSLv2:!SSLv3:!TLSv1
+        sudo easy_install pip
+        sudo pip install jinja2 pyyaml ostruct
 
-service	HDFS	hadoop_policy_config_safety_valve	"<property>
- <name>security.client.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.client.datanode.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.datanode.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.inter.datanode.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.namenode.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.admin.operations.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.refresh.user.mappings.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.refresh.policy.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.ha.service.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.zkfc.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.qjournal.service.protocol.acl</name>
- <value>*</value>
-</property>
-<property>
- <name>security.mrhs.client.protocol.acl</name>
- <value>*</value>
-</property>
-"
-service	HDFS	hadoop_policy_config_safety_valve	"<property>
-<name>security.job.submission.protocol.acl</name>
-<value>yarn, mapreduce, chorus</value>
-<description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description>
-</property>
-<property>
-<name>security.datanode.protocol.acl</name>
-<value>*</value>
-</property>
-<property>
-<name>security.client.protocol.acl</name>
-<value>*</value>
-</property>"
-service	HDFS	hadoop_policy_config_safety_valve	<property>  <name>security.job.submission.protocol.acl</name>  <value>yarn, mapreduce, chorus</value>  <description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property>  <name>security.datanode.protocol.acl</name>  <value>*</value> </property> <property>  <name>security.client.protocol.acl</name>  <value>*</value> </property>
-service	HDFS	hadoop_policy_config_safety_valve	<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, c360alpd</value> <description>yarn, mapreduce, and c360alpd are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
-service	HDFS	hadoop_policy_config_safety_valve	<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, mapred, alpine</value> </property>  <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
-service	HDFS	hadoop_policy_config_safety_valve	"<property><name>security.client.protocol.acl</name><value>*</value></property>
-<property><name>security.client.datanode.protocol.acl</name><value>*</value></property>
-<property><name>security.datanode.protocol.acl</name><value>*</value></property>
-<property><name>security.inter.datanode.protocol.acl</name><value>*</value></property>
-<property><name>security.namenode.protocol.acl</name><value>*</value></property>
-<property><name>security.admin.operations.protocol.acl</name><value>*</value></property>
-<property><name>security.refresh.user.mappings.protocol.acl</name><value>*</value></property>
-<property><name>security.refresh.policy.protocol.acl</name><value>*</value></property>
-<property><name>security.ha.service.protocol.acl</name><value>*</value></property>
-<property><name>security.zkfc.protocol.acl</name><value>*</value></property>
-<property><name>security.qjournal.service.protocol.acl</name><value>*</value></property>
-<property><name>security.mrhs.client.protocol.acl</name><value>*</value></property> "
-service	HDFS	hadoop_policy_config_safety_valve	"<property><name>security.client.protocol.acl</name><value>*</value></property>
-<property><name>security.client.datanode.protocol.acl</name><value>*</value></property>
-<property><name>security.datanode.protocol.acl</name><value>*</value></property>
-<property><name>security.inter.datanode.protocol.acl</name><value>*</value></property>
-<property><name>security.namenode.protocol.acl</name><value>*</value></property>
-<property><name>security.admin.operations.protocol.acl</name><value>*</value></property>
-<property><name>security.refresh.user.mappings.protocol.acl</name><value>*</value></property>
-<property><name>security.refresh.policy.protocol.acl</name><value>*</value></property>
-<property><name>security.ha.service.protocol.acl</name><value>*</value></property>
-<property><name>security.zkfc.protocol.acl</name><value>*</value></property>
-<property><name>security.qjournal.service.protocol.acl</name><value>*</value></property>
-<property><name>security.mrhs.client.protocol.acl</name><value>*</value></property>
-"
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>*</value></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>*</value></property> <property><name>security.client.datanode.protocol.acl</name><value>*</value></property> <property><name>security.datanode.protocol.acl</name><value>*</value></property> <property><name>security.inter.datanode.protocol.acl</name><value>*</value></property> <property><name>security.namenode.protocol.acl</name><value>*</value></property> <property><name>security.admin.operations.protocol.acl</name><value>*</value></property> <property><name>security.refresh.user.mappings.protocol.acl</name><value>*</value></property> <property><name>security.refresh.policy.protocol.acl</name><value>*</value></property> <property><name>security.ha.service.protocol.acl</name><value>*</value></property> <property><name>security.zkfc.protocol.acl</name><value>*</value></property> <property><name>security.qjournal.service.protocol.acl</name><value>*</value></property> <property><name>security.mrhs.client.protocol.acl</name><value>*</value></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>hdfs_audit_logs,hbase,hive,hue,oozie,pie-utilization_hadoop,spark hadoop,hdp-datastudio,hdp-hdfs-hubble,hdp-pie-spark-access,hdp-pie-telemetry,hdp-sre</value></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.client.protocol.acl</name><value>hdfs_audit_logs,hbase,hive,hue,oozie,pie-utilization_hadoop,spark hadoop,hdp-datastudio,hdp-hdfs-hubble,hdp-pie-spark-access,hdp-pie-telemetry,hdp-sre</value><description>https://hadoop.apache.org/docs/r2.6.0/hadoop-project-dist/hadoop-common/ServiceLevelAuth.html</description></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbdwh26</value><description>yarn, mapreduce, and pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbwaanlp26, pbbdwh26</value><description>yarn, mapreduce, pbbwaanlp26, pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,alpine</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
-service	HDFS	hadoop_policy_config_safety_valve	<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,chorus,fidelity,fidelity_tsds,fidelity_unifi</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+3. Install the [Roberto](https://fonts.google.com/specimen/Roboto?selection.family=Roboto) font. Just download and
+   double click to install on MacOS.
+
+### 2.2 &nbsp;&nbsp; Generate standard docs
+
+For example, run the following commands to generate the CDSW, cluster deployment, disk guidelines, and security prereqs
+documents respectively:
+
+    ./doc-gen.py make-pdf -t src/latex/templates/cdsw-prereqs.tex
+    ./doc-gen.py make-pdf -t src/latex/templates/deploy-prereqs.tex
+    ./doc-gen.py make-pdf -t src/latex/templates/disk-guidelines.tex
+    ./doc-gen.py make-pdf -t src/latex/templates/security-prereqs.tex
+
+### 2.3 &nbsp;&nbsp; Generate custom engagement doc
+
+#### 2.3.1 &nbsp;&nbsp; Collect cluster information
+
+Use the `cm-info.sh` script to get information from Cloudera Manager. 
+
+Sample usage (Cloudera VPN required for this example since it connects to the internal nightly builds):
+
+    ./cm-info.sh --host http://nightly513-1.gce.cloudera.com:7180 -u admin -p admin
 
 
+Sample output:
 
-"<property>
-<name>security.job.submission.protocol.acl</name>
-<value>yarn, mapreduce, chorus</value>
-<description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description>
-</property>
-<property>
-<name>security.datanode.protocol.acl</name>
-<value>*</value>
-</property>
-<property>
-<name>security.client.protocol.acl</name>
-<value>*</value>
-</property>"
-"<property>
-<name>security.job.submission.protocol.acl</name>
-<value>yarn, mapreduce, eisdev</value>
-<description>yarn, mapreduce, and eisdev are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description>
-</property>
-"
-"<property>
-<name>security.job.submission.protocol.acl</name>
-<value>yarn, mapreduce, eisdev</value>
-<description>yarn, mapreduce, and eisdev are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description>
-</property>"
-<property>  <name>security.job.submission.protocol.acl</name>  <value>yarn, mapreduce, chorus</value>  <description>yarn, mapreduce, and chorus are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property>  <name>security.datanode.protocol.acl</name>  <value>*</value> </property> <property>  <name>security.client.protocol.acl</name>  <value>*</value> </property>
-<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, c360alpd</value> <description>yarn, mapreduce, and c360alpd are allowed to submit jobs. Specifying the "*" value would allow any user to submit jobs.</description> </property> <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
-<property> <name>security.job.submission.protocol.acl</name> <value>yarn, mapreduce, mapred, alpine</value> </property>  <property> <name>security.datanode.protocol.acl</name> <value>*</value> </property> <property> <name>security.client.protocol.acl</name> <value>*</value> </property>
-<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbdwh26</value><description>yarn, mapreduce, and pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
-<property><name>security.job.submission.protocol.acl</name><value>yarn, mapreduce, pbbwaanlp26, pbbdwh26</value><description>yarn, mapreduce, pbbwaanlp26, pbbdwh26 are allowed to submit jobs. Change to "*" value would allow any user to submit jobs.</description></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
-<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,alpine</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
-<property><name>security.job.submission.protocol.acl</name><value>yarn,mapreduce,chorus,fidelity,fidelity_tsds,fidelity_unifi</value></property><property><name>security.datanode.protocol.acl</name><value>*</value></property><property><name>security.client.protocol.acl</name><value>*</value></property>
+    Sun Dec 31 00:44:19 +08 2017 [INFO ] Cloudera Manager seems to be running
+    Sun Dec 31 00:44:20 +08 2017 [INFO ] Getting Cloudera Manager config
+    Sun Dec 31 00:44:22 +08 2017 [INFO ] Getting Cloudera Manager role configs
+    Sun Dec 31 00:44:23 +08 2017 [INFO ]  - Getting role config for mgmt-ACTIVITYMONITOR-BASE
+    ...
+    Sun Dec 31 00:44:31 +08 2017 [INFO ]  - Getting role config for mgmt-SERVICEMONITOR-BASE
+    Sun Dec 31 00:44:32 +08 2017 [INFO ] Getting redacted deployment configs
+    Sun Dec 31 00:44:35 +08 2017 [INFO ] Processing Cluster 1...
+    Sun Dec 31 00:44:36 +08 2017 [INFO ]  - Getting service config for ACCUMULO16-1
+    Sun Dec 31 00:44:43 +08 2017 [INFO ]  - Getting service config for FLUME-1
+    ...
+    Sun Dec 31 00:45:52 +08 2017 [INFO ]  - Getting service config for ZOOKEEPER-1
+    Sun Dec 31 00:45:56 +08 2017 [INFO ]  - Got host config for nightly513-2.gce.cloudera.com
+    ...
+    Sun Dec 31 00:45:57 +08 2017 [INFO ]  - Got host config for nightly513-3.gce.cloudera.com
+    Sun Dec 31 00:45:58 +08 2017 [INFO ] Wrote to nightly513-1.gce.cloudera.com.20171231-0044.tar.bz2
+
+
+#### 2.3.2 &nbsp;&nbsp; Generate custom report template
+
+For example:
+
+    ./doc-gen.py make-tex -c conf/Nightly513-Cluster-20171231.yaml
+
+Sample output:
+
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/00_preamble.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/01_intro.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/02_infra.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/03_cluster_config.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/10_sys_arch.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/11_cluster_config.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Rendering src/latex/templates/deploy-report/12_prod_readiness.tex
+    2018-06-12 23:47:59 TexMaker   INFO    Wrote to src/latex/reports/Nightly513_Cluster-Test_Report-20171230.tex
+
+You can now modify the resulting `.tex` file (e.g. `src/latex/reports/Nightly513_Cluster-Test_Report-20171230.tex`) in
+your preferred editor as needed. When done, run the `make-pdf` command to generate the PDF. 
+
+For example:
+
+    ./doc-gen.py make-pdf -t src/latex/reports/Nightly513_Cluster-Test_Report-20171230.tex
+
+You can also use the `watch` command to monitor the file for changes and have it automatically compile the PDF when
+saved. For example:
+
+    ./doc-gen.py watch -t src/latex/reports/Nightly513_Cluster-Test_Report-20171230.tex
+
+
+#### 2.3.3 &nbsp;&nbsp; Sample output
+
+Thumbnails of sample generated docs:
+
+![Sample report thumbnail](samples/sample-report-thumbnail.png)
+
+The full sample document is at [samples/cdh-prereqs.pdf](samples/cdh-prereqs.pdf).
+
+
+## 3. &nbsp;&nbsp; For Developers
+
+### 3.1 &nbsp;&nbsp; Install git-pylint-commit-hook
+
+Install `git-pylint-commit-hook` by running the following command:
+
+    pip install git-pylint-commit-hook
+
+See https://github.com/sebdah/git-pylint-commit-hook for details.
+
+### 3.2 &nbsp;&nbsp; Install ShellCheck
+
+Install `ShellCheck` by running the following command:
+
+    brew install shellcheck
+
+See https://github.com/koalaman/shellcheck for details.
+
+### 3.3 &nbsp;&nbsp; Git commit hook
+
+Add the following to `.git/hooks/pre-commit` in your repository:
+
+    #!/bin/sh
+
+    # get updated files | only .sh files (+ .bashrc/.zshrc) | shellcheck
+    git diff-index --cached --name-only $against | grep -e \.bashrc -e \.zshrc -e \.bash_profile -e \\.sh$ | xargs shellcheck
+
+    # Checking Python using pylint
+    git-pylint-commit-hook
+
+
+## 4 &nbsp;&nbsp; Appendix
+
+### 4.1 &nbsp;&nbsp; Sample usage for cm-info.sh
+
+    ./cm-info.sh
+
+    Cloudera Manager Info Collector v1.2.0
+
+    USAGE:
+      ./cm-info.sh [OPTIONS]
+
+    MANDATORY OPTIONS:
+      -h, --host url
+            Cloudera Manager URL (e.g. http://cm-mycluster.com:7180)
+
+      -u, --user username
+            Cloudera Manager admin username
+
+    OPTIONS:
+      -p, --password password
+            Cloudera Manager admin password. Will be prompted if unspecified.
+
+
+### 4.2 &nbsp;&nbsp; Sample usage for doc-gen.py
+
+    ./doc-gen.py -h
+    usage: ./doc-gen.py <command> [<args>]
+
+    The command used to generate PS Document are:
+
+       make-tex     Generate LaTeX template (tex file) based on provided inputs
+       make-pdf     Creates a PDF document from a Latex template
+       watch        Watches LaTeX file for changes and rebuilds PDF
+
+    commands:
+
+        make-tex
+            Generate template Latex (tex) file based on specified config file.
+
+            usage: ./doc-gen.py make-tex -c conf/Telkomsel-Cluster_Health_Check-20171230.yaml
+
+        make-pdf
+            Creates a PDF document from a Latex template.
+
+            usage: ./doc-gen.py make-pdf -t src/latex/templates/deploy-prereqs.tex
+
+        watch:
+            Automatically rebuild PDF if specified Latex template changes (same action as make-pdf).
+
+            usage: ./doc-gen.py watch -t src/latex/templates/deploy-prereqs.tex
+
+
+    PS Document Generator
+
+    positional arguments:
+      command     Subcommand to run
+
+    optional arguments:
+      -h, --help  show this help message and exit
+
+
+### 4.3 &nbsp;&nbsp; Convert PDF to Microsoft Word format
+
+There are several ways to convert `.pdf` to `.docx`, one of which is to use Adobe Acrobat Pro.
+A sample `.docx` converted by Adobe Acrobat Pro is at [samples/cdh-prereqs.docx](samples/cdh-prereqs.docx).
